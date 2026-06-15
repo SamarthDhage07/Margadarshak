@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { getMentorBookings, updateMentorProfile } from '@/lib/firestore'
 import MentorVerification from '@/components/MentorVerification'
+import SlotManager from '@/components/SlotManager'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import AIChat from '@/components/AIChat'
@@ -256,6 +257,13 @@ export default function MentorDashboard() {
             </div>
           )}
         </div>
+
+        {/* SLOT MANAGER */}
+        {profile?.verified && (
+          <div className="fade-up d2" style={{ marginBottom: 32 }}>
+            <SlotManager mentorId={user?.uid} />
+          </div>
+        )}
 
         {/* Session Requests */}
         <div className="fade-up d3">
