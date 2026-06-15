@@ -34,7 +34,7 @@ export default function BookingForm({ mentor, onClose }) {
       setAvailableSlots(slots)
       setNoSlots(slots.length === 0)
       setLoadingSlots(false)
-    }).catch(() => setLoadingSlots(false))
+    }).catch(() => { setLoadingSlots(false); setNoSlots(true) })
   }, [form.date, mentor?.uid])
 
   const validate = () => {
