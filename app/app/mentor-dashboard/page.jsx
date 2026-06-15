@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/AuthContext'
 import { getMentorBookings, updateMentorProfile } from '@/lib/firestore'
+import MentorVerification from '@/components/MentorVerification'
+import SlotManager from '@/components/SlotManager'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import AIChat from '@/components/AIChat'
@@ -119,6 +121,49 @@ export default function MentorDashboard() {
           </div>
         </div>
 
+
+        {/* ── VERIFICATION STATUS BANNER ── */}
+        {!profile?.verified && (
+          <div className="fade-up" style={{ marginBottom: 32 }}>
+            {(!profile?.verificationStatus || profile?.verificationStatus === 'pending') && !profile?.college ? (
+              <div style={{ background: '#fff', borderRadius: 24, border: '1px solid #e8e4de', overflow: 'hidden' }}>
+                <div style={{ background: 'rgba(201,169,110,0.08)', borderBottom: '1px solid rgba(201,169,110,0.15)', padding: '16px 24px', display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ fontSize: 20 }}>📋</span>
+                  <div>
+                    <p style={{ fontWeight: 600, fontSize: 14, color: '#0d0d0d' }}>Complete Your Mentor Application</p>
+                    <p style={{ fontSize: 12, color: '#9a9a9a', marginTop: 2 }}>Upload your college proof to get verified and appear on the mentors page</p>
+                  </div>
+                </div>
+                <div style={{ padding: '24px' }}>
+                  <MentorVerification user={user} onComplete={() => window.location.reload()} />
+                </div>
+              </div>
+            ) : profile?.verificationStatus === 'pending' ? (
+              <div style={{ background: '#fef3c7', border: '1px solid #fde68a', borderRadius: 16, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontSize: 24 }}>⏳</span>
+                <div>
+                  <p style={{ fontWeight: 600, fontSize: 14, color: '#92400e' }}>Verification Pending</p>
+                  <p style={{ fontSize: 13, color: '#a16207', marginTop: 2 }}>Your documents are under review. We'll notify you within 24–48 hours.</p>
+                </div>
+              </div>
+            ) : profile?.verificationStatus === 'rejected' ? (
+              <div style={{ background: '#fee2e2', border: '1px solid #fecaca', borderRadius: 16, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontSize: 24 }}>❌</span>
+                <div>
+                  <p style={{ fontWeight: 600, fontSize: 14, color: '#991b1b' }}>Verification Rejected</p>
+                  <p style={{ fontSize: 13, color: '#b91c1c', marginTop: 2 }}>Reason: {profile?.rejectionReason || 'Document not valid'}. Please resubmit.</p>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        )}
+        {profile?.verified && (
+          <div style={{ background: '#d1fae5', border: '1px solid #bbf7d0', borderRadius: 14, padding: '12px 18px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 20 }}>✅</span>
+            <p style={{ fontSize: 13, color: '#065f46', fontWeight: 500 }}>Your profile is verified and live on the mentors page!</p>
+          </div>
+        )}
+
         {/* Stats */}
         <div className="fade-up d1" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: 14, marginBottom: 36 }}>
           {[
@@ -212,6 +257,14 @@ export default function MentorDashboard() {
             </div>
           )}
         </div>
+
+
+        {/* ── SLOT MANAGER — shown only after verified ── */}
+        {profile?.verified && (
+          <div className="fade-up d2" style={{ marginBottom: 0 }}>
+            <SlotManager mentorId={user?.uid} />
+          </div>
+        )}
 
         {/* Session Requests */}
         <div className="fade-up d3">
